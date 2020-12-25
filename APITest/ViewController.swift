@@ -20,12 +20,19 @@ struct AddressModel: Decodable {
     }
 }
 
+struct DataModel: Codable {
+    let getUserInfo: String
+}
+
 class ViewController: UIViewController {
     
     @IBOutlet weak var button: UIButton!
     @IBOutlet weak var label: UILabel!
     
     private var addresses: AddressModel?
+    private var dataModel: DataModel?
+    
+    var labelText = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,20 +41,50 @@ class ViewController: UIViewController {
     
     @IBAction func tapedButton(_ sender: Any) {
         
-        getAddress(zipCode: "2790031")
+        getData(url: URL(string: "http://127.0.0.1:8010/ios_home/")!)
         
-//        let url = URL(string: "https://hogehoge.hoge")!  //URLを生成
-//        var request = URLRequest(url: url)               //Requestを生成
-//        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in  //非同期で通信を行う
-//            guard let data = data else { return }
-//            do {
-//                let object = try JSONSerialization.jsonObject(with: data, options: [])  // DataをJsonに変換
-//                print(object)
-//            } catch let error {
-//                print(error)
-//            }
-//        }
-//        task.resume()
+        //getAddress(zipCode: "2790031")
+        
+    }
+    
+    private func getData(url: URL) {
+        //Requestを生成
+        let request = URLRequest(url: url)
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in  //非同期で通信を行う
+            guard let data = data else { return }
+            do {
+                //DataをJsonに変換
+                let object = try JSONSerialization.jsonObject(with: data, options: [])
+                print(object)
+                print("==============object====================")
+                print(type(of: object))
+                
+                self.dataModel = try JSONDecoder().decode(DataModel.self, from: data)
+                print("==============self.dataModel====================")
+                print(self.dataModel ?? "dataModelがnilだったよ")
+                print(type(of: self.dataModel))
+                
+                print("==============self.dataModel?.getUserInfo====================")
+                print(self.dataModel?.getUserInfo ?? "getUserInfoがnilだったよ")
+                print(type(of: self.dataModel?.getUserInfo))
+                
+                // main threadで実行
+                DispatchQueue.main.sync {
+                    self.label.text = self.dataModel?.getUserInfo
+                }
+                
+            } catch let error {
+                print(error)
+            }
+            //            self.label.text = self.dataModel?.getUserInfo
+//            self.label.text = self.labelText
+//            print(self.labelText)
+//            print(self.dataModel?.getUserInfo)
+            
+        }
+        
+        task.resume()
+        
     }
     
     private func getAddress(zipCode: String) {
@@ -77,33 +114,33 @@ class ViewController: UIViewController {
         }.resume()
     }
     
-    static func fetchArticle(completion: @escaping ([QiitaStruct]) -> Swift.Void) {
-
-            let url = "https://qiita.com/api/v2/items"
-
-            guard var urlComponents = URLComponents(string: url) else {
-                return
-            }
-
-            urlComponents.queryItems = [
-                URLQueryItem(name: "per_page", value: "50"),
-            ]
-
-            let task = URLSession.shared.dataTask(with: urlComponents.url!) { data, response, error in
-
-                guard let jsonData = data else {
-                    return
-                }
-
-                do {
-                    let articles = try JSONDecoder().decode([QiitaStruct].self, from: jsonData)
-                    completion(articles)
-                } catch {
-                    print(error.localizedDescription)
-                }
-            }
-            task.resume()
-        }
-    
+//    static func fetchArticle(completion: @escaping ([QiitaStruct]) -> Swift.Void) {
+//
+//        let url = "https://qiita.com/api/v2/items"
+//
+//        guard var urlComponents = URLComponents(string: url) else {
+//            return
+//        }
+//
+//        urlComponents.queryItems = [
+//            URLQueryItem(name: "per_page", value: "50"),
+//        ]
+//
+//        let task = URLSession.shared.dataTask(with: urlComponents.url!) { data, response, error in
+//
+//            guard let jsonData = data else {
+//                return
+//            }
+//
+//            do {
+//                let articles = try JSONDecoder().decode([QiitaStruct].self, from: jsonData)
+//                completion(articles)
+//            } catch {
+//                print(error.localizedDescription)
+//            }
+//        }
+//        task.resume()
+//    }
+//
 }
 
