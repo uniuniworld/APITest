@@ -41,10 +41,44 @@ class ViewController: UIViewController {
     
     @IBAction func tapedButton(_ sender: Any) {
         
-        getData(url: URL(string: "http://127.0.0.1:8010/ios_home/")!)
+        //getData(url: URL(string: "http://127.0.0.1:8010/ios/init/")!)
+        getInitData(url: URL(string: "http://127.0.0.1:8010/ios/init/")!)
         
         //getAddress(zipCode: "2790031")
         
+    }
+    
+    private func getInitData(url: URL) {
+        
+        let request = URLRequest(url: url)
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("クライアントエラー: \(error.localizedDescription) \n")
+                return
+            }
+            
+            guard let data = data, let response = response as? HTTPURLResponse else {
+                print("no data or no response")
+                return
+            }
+            
+            let dic = try! JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any]
+            
+            print(dic)
+            
+            if response.statusCode == 200 {
+                print(data)
+            } else {
+                // レスポンスのステータスコードが200でない場合などはサーバサイドエラー
+                print("サーバエラー ステータスコード: \(response.statusCode)\n")
+            }
+            
+            label.text = String(dic)
+            
+        }
+        
+        task.resume()
     }
     
     private func getData(url: URL) {
@@ -59,18 +93,19 @@ class ViewController: UIViewController {
                 print("==============object====================")
                 print(type(of: object))
                 
-                self.dataModel = try JSONDecoder().decode(DataModel.self, from: data)
-                print("==============self.dataModel====================")
-                print(self.dataModel ?? "dataModelがnilだったよ")
-                print(type(of: self.dataModel))
-                
-                print("==============self.dataModel?.getUserInfo====================")
-                print(self.dataModel?.getUserInfo ?? "getUserInfoがnilだったよ")
-                print(type(of: self.dataModel?.getUserInfo))
+//                self.dataModel = try JSONDecoder().decode(DataModel.self, from: data)
+//                print("==============self.dataModel====================")
+//                print(self.dataModel ?? "dataModelがnilだったよ")
+//                print(type(of: self.dataModel))
+//
+//                print("==============self.dataModel?.getUserInfo====================")
+//                print(self.dataModel?.getUserInfo ?? "getUserInfoがnilだったよ")
+//                print(type(of: self.dataModel?.getUserInfo))
                 
                 // main threadで実行
                 DispatchQueue.main.sync {
-                    self.label.text = self.dataModel?.getUserInfo
+//                    self.label.text = String(self.object)
+//                    self.label.text = self.dataModel?.getUserInfo
                 }
                 
             } catch let error {
