@@ -3,6 +3,17 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "closure #1 in ViewController.getScheduleData(urll:):ViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "years">
+            </PersistentString>
+            <PersistentString
+               value = "response.data?.years?[0].year">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "closure #1 in ViewController.getData(url:):ViewController.swift">
          <PersistentStrings>
             <PersistentString
@@ -15,6 +26,14 @@
          <PersistentStrings>
             <PersistentString
                value = "labelText">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "mach_msg_trap:(null)">
+         <PersistentStrings>
+            <PersistentString
+               value = "ScheduleData.type">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
